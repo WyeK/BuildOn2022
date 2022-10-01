@@ -650,11 +650,13 @@ class semantic_segmentation():
                 # client, ipaddress = tcp_server.accept()
                 udp_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 udp_server.bind((local_ip, port))
+                print("Device connected")
 
             while True:
                 ret, frame = capture.read()
                 if remote:
                     packet, address = udp_server.recvfrom(65536)
+                    print("Frame received")
                     npdata = np.frombuffer(packet, dtype=np.uint8)
                     frame = cv2.imdecode(npdata, 1)
                 if ret:
