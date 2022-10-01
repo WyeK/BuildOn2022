@@ -413,19 +413,45 @@ class semantic_segmentation():
         if extract_segmented_objects == True:
             segvalues, objects_masks = ade20k_map_color_mask(raw_labels,
                                                              extract_segmented_objects=extract_segmented_objects)
-            obj_detected = False
+            left_rect = False
+            middle_rect = False
+            right_rect = False
+
             obj_label = ""
             for obj in objects_masks:
                 if obj["class_id"] not in [0, 4]:
-                    for i in range(200, 288):
-                        for j in range(205, 308):
+                    # Left Rectangle
+                    for i in range(round(0.7 * 288), 288):
+                        for j in range(round(0.15 * 512), round(0.35 * 512)):
                             if obj["masks"][i][j]:
-                                obj_detected = True
+                                left_rect = True
                                 obj_label = obj["class_name"]
                                 break
-            if obj_detected:
-                cv2.putText(new_img, 'Avoid ' + obj_label, org, font,
-                            fontScale, (0, 0, 255), thickness, cv2.LINE_AA)
+                    # Middle Rectangle
+                    for i in range(round(0.7 * 288), 288):
+                        for j in range(round(0.4 * 512), round(0.6 * 512)):
+                            if obj["masks"][i][j]:
+                                middle_rect = True
+                                obj_label = obj["class_name"]
+                                break
+                    # Right Rectangle
+                    for i in range(round(0.7 * 288), 288):
+                        for j in range(round(0.4 * 512), round(0.6 * 512)):
+                            if obj["masks"][i][j]:
+                                right_rect = True
+                                obj_label = obj["class_name"]
+                                break
+            if middle_rect:
+                if left_rect:
+                    cv2.putText(new_img, 'Turn Right ' + obj_label + " ahead", org, font,
+                                fontScale, (0, 0, 255), thickness, cv2.LINE_AA)
+                elif right_rect:
+                    cv2.putText(new_img, 'Turn Left ' + obj_label + " ahead", org, font,
+                                fontScale, (0, 0, 255), thickness, cv2.LINE_AA)
+                else:
+                    cv2.putText(new_img, 'Stop ' + obj_label + " ahead", org, font,
+                                fontScale, (0, 0, 255), thickness, cv2.LINE_AA)
+
             else:
                 cv2.putText(new_img, 'Clear', org, font,
                             fontScale, (0, 255, 0), thickness, cv2.LINE_AA)
@@ -644,8 +670,12 @@ class semantic_segmentation():
                     counter += 1
                     if show_frames == True:
                         if frame_name is not None:
-                            new_image = cv2.rectangle(frame_overlay, (round(0.4 * width), round(0.7 * height)),
-                                                    (round(0.6 * width), height), (0, 0, 0), 2)
+                            left_rect = cv2.rectangle(frame_overlay, (round(0.15 * width), round(0.7 * height)),
+                                                      (round(0.35 * width), height), (0, 0, 0), 2)
+                            middle_rect = cv2.rectangle(left_rect, (round(0.4 * width), round(0.7 * height)),
+                                                      (round(0.6 * width), height), (0, 0, 255), 2)
+                            new_image = cv2.rectangle(middle_rect, (round(0.65 * width), round(0.7 * height)),
+                                                      (round(0.85 * width), height), (0, 0, 0), 2)
                             cv2.imshow(frame_name, new_image)
                             if cv2.waitKey(25) & 0xFF == ord('q'):
                                 break
@@ -708,8 +738,12 @@ class semantic_segmentation():
                     counter += 1
                     if show_frames == True:
                         if frame_name is not None:
-                            new_image = cv2.rectangle(new_frame, (round(0.4 * width), round(0.7 * height)),
+                            left_rect = cv2.rectangle(new_frame, (round(0.15 * width), round(0.7 * height)),
+                                                      (round(0.35 * width), height), (0, 0, 0), 2)
+                            middle_rect = cv2.rectangle(left_rect, (round(0.4 * width), round(0.7 * height)),
                                                       (round(0.6 * width), height), (0, 0, 0), 2)
+                            new_image = cv2.rectangle(middle_rect, (round(0.65 * width), round(0.7 * height)),
+                                                      (round(0.85 * width), height), (0, 0, 0), 2)
                             cv2.imshow(frame_name, new_image)
                             if cv2.waitKey(25) & 0xFF == ord('q'):
                                 break
