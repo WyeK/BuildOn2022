@@ -8,8 +8,6 @@ from .deeplab import Deeplab_xcep_ade20k
 import cv2
 import time
 from datetime import datetime
-import imantics
-from imantics import Polygons, Mask
 
 
 class semantic_segmentation():
@@ -442,10 +440,10 @@ class semantic_segmentation():
                                 obj_label = obj["class_name"]
                                 break
             if middle_rect:
-                if left_rect:
+                if left_rect and middle_rect:
                     cv2.putText(new_img, 'Turn Right ' + obj_label + " ahead", org, font,
                                 fontScale, (0, 0, 255), thickness, cv2.LINE_AA)
-                elif right_rect:
+                elif right_rect and middle_rect:
                     cv2.putText(new_img, 'Turn Left ' + obj_label + " ahead", org, font,
                                 fontScale, (0, 0, 255), thickness, cv2.LINE_AA)
                 else:

@@ -4,7 +4,7 @@ from pixellib import semantic
 
 
 def ade20k_detection():
-    capture = cv2.VideoCapture("example_vid.mp4")
+    capture = cv2.VideoCapture("Hospital.mp4")
 
     segment_video = semantic.semantic_segmentation()
     segment_video.load_ade20k_model("deeplabv3_xception65_ade20k.h5")
