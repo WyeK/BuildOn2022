@@ -425,7 +425,6 @@ class semantic_segmentation():
                         for j in range(round(0.15 * shape_w), round(0.35 * shape_w)):
                             if obj["masks"][i][j]:
                                 left_rect = True
-                                obj_label = obj["class_name"]
                                 break
                     # Middle Rectangle
                     for i in range(round(0.7 * shape_h), shape_h):
@@ -436,20 +435,22 @@ class semantic_segmentation():
                                 break
                     # Right Rectangle
                     for i in range(round(0.7 * shape_h), shape_h):
-                        for j in range(round(0.4 * shape_w), round(0.6 * shape_w)):
+                        for j in range(round(0.65 * shape_w), round(0.85 * shape_w)):
                             if obj["masks"][i][j]:
                                 right_rect = True
-                                obj_label = obj["class_name"]
                                 break
             if middle_rect:
-                if left_rect and middle_rect:
+                if left_rect and not right_rect:
                     cv2.putText(new_img, 'Turn Right ' + obj_label + " ahead", org, font,
                                 fontScale, (0, 0, 255), thickness, cv2.LINE_AA)
-                elif right_rect and middle_rect:
+                elif right_rect and not left_rect:
                     cv2.putText(new_img, 'Turn Left ' + obj_label + " ahead", org, font,
                                 fontScale, (0, 0, 255), thickness, cv2.LINE_AA)
-                else:
+                elif left_rect and right_rect:
                     cv2.putText(new_img, 'Stop ' + obj_label + " ahead", org, font,
+                                fontScale, (0, 0, 255), thickness, cv2.LINE_AA)
+                else:
+                    cv2.putText(new_img, 'Turn Left ' + obj_label + " ahead", org, font,
                                 fontScale, (0, 0, 255), thickness, cv2.LINE_AA)
 
             else:
