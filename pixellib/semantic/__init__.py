@@ -419,22 +419,24 @@ class semantic_segmentation():
             for obj in objects_masks:
                 if obj["class_id"] not in [0, 4]:
                     # Left Rectangle
-                    for i in range(round(0.7 * 288), 288):
-                        for j in range(round(0.15 * 512), round(0.35 * 512)):
+                    shape_h = obj["masks"].shape[0]
+                    shape_w = obj["masks"].shape[1]
+                    for i in range(round(0.7 * shape_h), shape_h):
+                        for j in range(round(0.15 * shape_w), round(0.35 * shape_w)):
                             if obj["masks"][i][j]:
                                 left_rect = True
                                 obj_label = obj["class_name"]
                                 break
                     # Middle Rectangle
-                    for i in range(round(0.7 * 288), 288):
-                        for j in range(round(0.4 * 512), round(0.6 * 512)):
+                    for i in range(round(0.7 * shape_h), shape_h):
+                        for j in range(round(0.4 * shape_w), round(0.6 * shape_w)):
                             if obj["masks"][i][j]:
                                 middle_rect = True
                                 obj_label = obj["class_name"]
                                 break
                     # Right Rectangle
-                    for i in range(round(0.7 * 288), 288):
-                        for j in range(round(0.4 * 512), round(0.6 * 512)):
+                    for i in range(round(0.7 * shape_h), shape_h):
+                        for j in range(round(0.4 * shape_w), round(0.6 * shape_w)):
                             if obj["masks"][i][j]:
                                 right_rect = True
                                 obj_label = obj["class_name"]
@@ -657,6 +659,8 @@ class semantic_segmentation():
                     print("Frame received")
                     npdata = np.frombuffer(packet, dtype=np.uint8)
                     frame = cv2.imdecode(npdata, 1)
+                    width = 720
+                    height = 480
                 if ret:
                     if extract_segmented_objects == False:
                         segvalues, frame_overlay = self.segmentAsAde20k(frame, overlay=True, process_frame=True,
@@ -723,6 +727,7 @@ class semantic_segmentation():
             while True:
                 ret, frame = capture.read()
                 if remote:
+                    last_frame_time = datetime.now()
                     packet, address = udp_server.recvfrom(65536)
                     npdata = np.frombuffer(packet, dtype=np.uint8)
                     frame = cv2.imdecode(npdata, 1)
